@@ -69,55 +69,15 @@ a <- c("k1*CO2*NADPH",
 #state change matrix
 #stoichiometric ratios of reactants and products 
 #rows: reactants/products, columns: reactions
-#nu <- matrix(c(##CO2 fixation####
-#               -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, -1, 0, 0, 0, 0, 0, -1, #CO2
-#               -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, #NADPH
-#               1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, #formate
-#               1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, #NADP+
-#               0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, #tetrahydrofolate 
-#               0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, -1, 0, #ATP
-#               0, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, #Nformyltetrahydrofolate
-#               0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, #ADP 
-#               0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0,#phosphate 
-#               0, 0, -1, 0, -2, -1, 0, -1, -2, 1, -1, -1, -1, 0, 0, 0, -1, #H+
-#               0, 0, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, #methenyltetrahydrofolate
-#               0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, #H2O
-#               0, 0, 0, 1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, #methylenetetrahydrofolate 
-#               0, 0, 0, 0, -2, 0, 2, 0, -2, 0, -2, 0, 0, 0, 0, 0, -2, #reduced FeS cluster 
-#               0, 0, 0, 0, 1, 1, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, #methyltetrahydrofolate 
-#               0, 0, 0, 0, 2, 0, -2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, #oxidized FeS cluster
-#               0, 0, 0, 0, 0, -1, -2, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, #NADH
-#               0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 1,  0, 0, 0, 0, #NAD
-#               0, 0, 0, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, #Corrinoid (I)-FeS
-#               0, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, #methyl Corrinoid(III)-FeS
-#               0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0, 0, 0, 0, 0, 0, #carbon monoxide 
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1, 0, 0, 0, 0, 0, 1, #coA
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0, 0, 0, 0, 0, #acetyl coA
-##reductive TCA cycle####
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0, 0, 0, 0, 0, #pyruvate
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, #hyrogencarbonate
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0, 0, 0, #oxaloacetate
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0, 0, #(S)-malate
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0, #fumarate 
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, #menaquinol
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, #succinate
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, #menaquinone
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, #succinyl-coA
-#               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 #2-oxoglutarate
-##
-#               ), nrow = 33, byrow = T)
-
-mat <- read.csv (file="matrix2.csv")
+mat <- read.csv("matrix.csv", header=F)
 mat <- as.matrix(mat)
-
+mat <- -mat[,-1]
 
 mat2 <- read.delim("matrix.txt", header=F)
 mat2 <- as.matrix(mat2)
 
 out <- ssa(x0, a, mat2, parms, tf=100)
 ssa.plot(out, show.legend =T)
-
-out$data [13000,4]
 
 x <- data.frame(out$data[,1])
 y <- data.frame(out$data[,4]) 
