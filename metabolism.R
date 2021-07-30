@@ -70,13 +70,9 @@ a <- c("k1*CO2*NADPH",
 #stoichiometric ratios of reactants and products 
 #rows: reactants/products, columns: reactions
 mat <- read.csv("matrix.csv", header=F)
-mat <- as.matrix(mat)
-mat <- -mat[,-1]
+mat <- as.matrix(mat[-1])
 
-mat2 <- read.delim("matrix.txt", header=F)
-mat2 <- as.matrix(mat2)
-
-out <- ssa(x0, a, mat2, parms, tf=100)
+out <- ssa(x0, a, mat, parms, tf=100)
 ssa.plot(out, show.legend =T)
 
 x <- data.frame(out$data[,1])
@@ -99,4 +95,3 @@ ssa.plot(out,  plot.from=24, plot.to=24) #acetyl coA
 library(ggplot2)
 g <- ggplot(out, ggplot2::aes_string(x,y)) + geom_point()  + geom_smooth(method="lm") 
 plot(g)
-
