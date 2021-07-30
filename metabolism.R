@@ -19,14 +19,14 @@ x0 <- c(CO2 = 5000, NADPH = 5000, formate = 0, NADP = 0,
         CO = 0, coA = 5000, acetyl_coA = 0, 
         pyruvate = 0, HCO3 = 5000, oxaloacetate = 0, 
         S_malate = 0, fumarate = 5000, 
-        menaquinol = 5000, succinate = 0, menaquinone = 0, 
-        succinyl_coA = 0, oxoglut = 0, 
-        acetolac = 0, acetohydbut = 5000, dihyd_metpent = 0, 
-        met_32_oxopent = 0, glu = 0, met_oxobut = 5000, 
-        val = 0, isop_malate = 0, isop_maleate = 0, isop_3_malate = 0,
-        isop_oxosucc = 0, met_42_oxopent = 0, 
-        leu = 0, thr = 0, aminobut = 0, iminobut = 0, 
-        oxobut = 0, NH3 = 1, dihyd_metbut = 0, ile = 0)
+        menaquinol = 5000, succinate = 0, menaquinone = 5000, 
+        succinyl_coA = 5000, oxoglut = 0, 
+        acetolac = 0, dihyd_metbut = 0, met_oxobut = 5000,
+        glu = 0, val = 0, isop_malate = 0, isop_maleate = 0, 
+        isop_3_malate = 0, isop_oxosucc = 0, met_42_oxopent = 0, 
+        leu = 0, thr = 0, aminobut = 5000, iminobut = 0, 
+        oxobut = 0, NH3 = 0, acetohydbut = 5000,
+        dihyd_metpent = 0, met_32_oxopent = 0, ile = 0)
 
 #rate equations for forward rxns 
 #rate constant assigned based on EC number 
@@ -72,13 +72,15 @@ a <- c("k1*CO2*NADPH",
 mat <- read.csv("matrix.csv", header=F)
 mat <- as.matrix(mat[-1])
 
-out <- ssa(x0, a, mat, parms, tf=100)
+out <- ssa(x0, a, mat, parms, tf=.0005)
 ssa.plot(out, show.legend =T)
+
+#################################################################################
 
 x <- data.frame(out$data[,1])
 y <- data.frame(out$data[,4]) 
 y
-out_2 <- ssa(x0, a, nu, parms, tf=0.0005)
+out_2 <- ssa(x0, a, nu, parms, tf=10)
 ssa.plot(out_2, plot.from=4, plot.to=4)
 
 par(mfrow=c(3,3))
