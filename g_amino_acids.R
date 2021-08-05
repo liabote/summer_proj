@@ -85,12 +85,6 @@ ssa.plot(out, show.legend =T)
 data <- out[["data"]]
 
 par(mfrow = (c(2,3)))
-plot(data[,29], data[,1], main ="glycine", pch=20)
-plot(data[,31], data[,1], main ="glutamine", pch=20)
-plot(data[,33], data[,1], main ="alanine", pch=20)
-plot(data[,37], data[,1], main ="valine", pch=20)
-plot(data[,46], data[,1], main ="aspartate", pch=20)
-
 plot(data[,1], data[,29], main ="glycine", pch=20)
 plot(data[,1], data[,31], main ="glutamine", pch=20)
 plot(data[,1], data[,33], main ="alanine", pch=20)
