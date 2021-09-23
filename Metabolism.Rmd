@@ -8,7 +8,7 @@ library(GillespieSSA)
 ```
 
 # Method
-The Gillespie algorithm was employed for creating stochastic simulations through the GillespieSSA package on R. The direct method was used, which sampled one reaction at a time to create a continuous projected trajectory. In order to do this, an initial state vector, state-change matrix, and propensity vector were supplied. 
+The Gillespie algorithm was employed for creating stochastic simulations through the GillespieSSA package on R. The direct method was used, which sampled one reaction at a time to project a continuous trajectory. In order to do this, an initial state vector, state-change matrix, and propensity vector were supplied. 
 
 The initial state vector contained concentrations for all the reactants and products involved in the reactions considered. Arbitrary values were assigned, with 5000 for reactants and cofactors and 0 for all products, in a cell volume of 1. The state-change matrix had stoichiometric ratios for the reactants and products in every reaction, with rows corresponding to species and columns to reactions. The propensity vector contained rate equations for every reaction step. Rate equations were obtained from the MetaCyc database for initially identified pathways. For carbon fixation, the reductive acetyl-coA pathway I was used. The reactions were also classified based on EC number. Rate constants were initially assigned based on this, where EC categories most commonly seen in the reactions were assigned higher rate constant values. Given this, each reaction was characterized by a propensity function and state change vector. 
 
@@ -740,6 +740,7 @@ plot(data_co_fix_4[,1], data_co_fix_4[,23], main ="coA", pch=20, cex=0.3,
 ### Changing the rate constants
 Rate constants were obtained for every reaction in the pathway based on the reported k~cat~ of each, although values were only available for enzyme-catalyzed reactions based on experimental models in physiological conditions. k~cat~ values were chosen from enzymes found in bacteria or archaea, for reactions going in the direction that they occur in metabolism. These k~cat~ values are listed in Table 1 below, with reactions listed in the order they appear in Figure 1. 
 
+
 Table 1. Enzymes in Carbon Fixation and Corresponding K~cat~ (s^-1^) 
 
 Reaction  | K~cat~ (s^-1^) | Enzyme
@@ -1029,16 +1030,24 @@ parms_k <- c(k_1 = 10, k_2 = 19.9, k_3 = 23.5, k_4 = 0.869,
 nmol <- 5000
 
 #initial concentrations of reactants and products involved 
-x_co_fix_new <- c(CO2 = nmol, H2 = 6*nmol, formic_acid = 0,
+x_co_fix_new <- c(CO2 = nmol, H2 = nmol, formic_acid = 0,
         formaldehyde = 0, methanol = 0, CO = 0, acetic_acid = 0, H2O = 0) 
 
+#a_co_fix_new <- #carbon fixation 
+  #c("k_1*CO2*H2", 
+   # "k_2*formic_acid*H2", 
+    #"k_3*formaldehyde*H2", 
+    #"k_4*methanol*CO", 
+    #"k_5*CO2*H2",
+    #"20*formic_acid")
+
 a_co_fix_new <- #carbon fixation 
-  c("k_1*CO2*H2", 
-    "k_2*formic_acid*H2", 
-    "k_3*formaldehyde*H2", 
-    "k_4*methanol*CO", 
-    "k_5*CO2*H2",
-    "20*formic_acid")
+  c("CO2*H2", 
+    "formic_acid*H2", 
+    "formaldehyde*H2", 
+    "methanol*CO", 
+    "CO2*H2",
+    "formic_acid")
 
 #state change matrix
 mat_co_fix_new <- read.csv("no_cofactors.csv", header=F)
@@ -1070,6 +1079,221 @@ plot(data_co_fix_new[,1], data_co_fix_new[,7], main ="CO", pch=20, cex=0.3,
 plot(data_co_fix_new[,1], data_co_fix_new[,8], main ="acetic acid", pch=20, cex=0.3,
       xlab ="Time", ylab="Concentration")
 plot(data_co_fix_new[,1], data_co_fix_new[,9], main ="H2O", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+
+```
+
+### First five amino acids with no cofactors
+``` {r no co factors 5 aa, echo = F}
+
+parms_k_nocof <- c(k_1_1 = 12.9, k_1_2 = 69.8, k_2_0 = 0.061, k_3_1 = 3.2, k_3_2 = 6.5, k_4_0 = 60, k_5_0 = 5.8, k_re=100) 
+
+parms_k_nocof <- c(k_1_1 = 1e4, k_1_2 = 1e5, k_2_0 = 1e4, k_3_1 = 10, k_3_2 = 1e7, k_4_0 = 1, k_5_0 = 1e11, k_re=100) 
+
+nmol <- 5000
+
+#initial concentrations of reactants and products involved 
+x0_no_cof <- c(CO2 = 3*nmol, H2 = 5*nmol, CO = 0, H2O = 0, formic = 0, formaldehyde = 0, methanol = 0, acetic = 0, pyruvic = 0, NH3 = 0.6*nmol, alanine = 0, oxaloacetic = 0, aspartic = 0, malic = 0, fumaric = 0, succinic = 0, oxoglutaric = 0, glutamic = 0, acetolactic = 0, dihydroxyisoval = 0, methyl_oxobut = 0, valine = 0, glycine = 0, x = 1)
+
+a_no_cof <- #carbon fixation 
+  c("k_1_1*CO2*H2", #CO 
+    "k_1_2*CO2*H2", #formic acid
+    "k_1_1*formic*H2", #formaldehyde 
+    "k_1_2*formaldehyde*H2", #methanol
+    "k_2_0*methanol*CO", #acetic acid
+    #"k_1_2*methanol*CO",
+    "k_3_1*acetic*CO2*H2", #pyruvic acid 
+    #"50*acetic*CO2*H2",
+    #"500",
+    
+    "k_4_0*pyruvic*NH3*H2", #alanine 
+    
+    "k_3_2*pyruvic*CO2*500", #oxaloacetic acid 
+    "k_4_0*oxaloacetic*NH3*H2", #aspartic acid
+    
+    "k_1_2*oxaloacetic*H2", #malic acid
+    "k_5_0*malic", #fumaric acid 
+    "k_1_2*fumaric*H2", #succinic acid 
+    "k_3_1*succinic*CO2*H2", #
+    "k_4_0*oxoglutaric*NH3*H2", #glutamic acid 
+    
+    "k_3_1*pyruvic^2",
+    "k_1_2*acetolactic*H2",
+    "k_5_0*dihydroxyisoval",
+    
+    "k_4_0*methyl_oxobut*NH3*H2", #valine
+    
+    "k_4_0*formaldehyde*NH3*H2*CO2", #glycine
+    
+    "0*k_re")
+
+a_no_cof <- #carbon fixation 
+  c("0.602*CO2*H2", #CO
+    "10*CO2*H2", #formic acid
+    "15*formic*H2", #formaldehyde
+    "108*formaldehyde*H2", #methanol
+    "0.061*methanol*CO*H2", #acetic
+    
+    "4*acetic*CO2*H2*10", #pyruvic
+    "0.17*pyruvic*NH3*H2", #alanine
+    "6.5*pyruvic*CO2", #oxaloacetic
+    "22*oxaloacetic*NH3*H2", #aspartic
+    "0.005*oxaloacetic*H2", #malic
+    
+    "11.2*malic", #fumaric
+    "230*fumaric*H2", #succinic
+    "4*succinic*CO2*H2", #oxoglutaric
+    "165.3*oxoglutaric*NH3*H2", #glutamic
+    "3.196*pyruvic^2", 
+    
+    "0.77*acetolactic*H2",
+    "0.31*dihydroxyisoval",
+    "150*methyl_oxobut*NH3*H2",
+    "0.6*formaldehyde*NH3*H2*CO2",
+    "500*x")
+
+a_no_cof <- #carbon fixation 
+  c("CO2*H2", #CO
+    "CO2*H2", #formic acid
+    "formic*H2", #formaldehyde
+    "formaldehyde*H2*100", #methanol
+    "methanol*CO*H2", #acetic
+    
+    "acetic*CO2*H2", #pyruvic
+    "pyruvic*NH3*H2", #alanine
+    "pyruvic*CO2*500", #oxaloacetic
+    "oxaloacetic*NH3*H2*400", #aspartic
+    "oxaloacetic*H2*400", #malic
+  
+    "malic*2500", #fumaric
+    "fumaric*H2*400", #succinic
+    "succinic*CO2*H2*400", #oxoglutaric
+    "oxoglutaric^2*NH3*H2", #glutamic
+    "pyruvic^2*1000", #acetolactate
+    
+    "acetolactic*H2*500", #dhydroxyvaleric 
+    "dihydroxyisoval*2500", #oxobutanoate
+    "methyl_oxobut^2*NH3*H2*1000", #valine 
+    "formaldehyde*NH3*H2*CO2/50000", #glycine
+    "0*x")
+
+a_no_cof <- #carbon fixation 
+  c("CO2*H2", #CO
+    "CO2*H2", #formic acid
+    "formic*H2", #formaldehyde
+    "formaldehyde*H2", #methanol
+    "methanol*CO*H2", #acetic
+    
+    "acetic*CO2*H2*1e-2", #pyruvic
+    "pyruvic*NH3*H2", #alanine
+    "pyruvic*CO2*1e3", #oxaloacetic
+    "oxaloacetic*NH3", #aspartic
+    "oxaloacetic*H2*1e3", #malic
+  
+    "malic*1e7", #fumaric
+    "fumaric*H2", #succinic
+    "succinic*CO2*H2", #oxoglutaric
+    "oxoglutaric^2*NH3*H2", #glutamic
+    "pyruvic^2*1e5", #acetolactate
+    
+    "acetolactic*H2*1e2", #dhydroxyvaleric 
+    "dihydroxyisoval*1e5", #oxobutanoate
+    "methyl_oxobut^2*NH3*H2*1e-2", #valine 
+    "formaldehyde*NH3*H2*CO2*1e-5", #glycine
+    "5000")
+
+
+#state change matrix
+mat_no_cof <- read.csv("no_cof_aa.csv", header=T)
+mat_no_cof <- as.matrix(mat_no_cof[-1])
+
+
+out_no_cof <- ssa(x0_no_cof, a_no_cof, mat_no_cof, parms_k_nocof, tf=0.0005)
+#ssa.plot(out_full, show.legend =T)
+
+data_no_cof <- out_no_cof[["data"]]
+
+max(data_no_cof[,"malic"])
+max(data_no_cof[,"fumaric"])
+max(data_no_cof[,"pyruvic"])
+max(data_no_cof[,"alanine"])
+max(data_no_cof[,"oxaloacetic"])
+max(data_no_cof[,"aspartic"])
+max(data_no_cof[,"glycine"])
+max(data_no_cof[,"succinic"])
+max(data_no_cof[,"fumaric"])
+max(data_no_cof[,"oxoglutaric"])
+max(data_no_cof[,"glutamic"])
+max(data_no_cof[,"CO"])
+max(data_no_cof[,"formic"])
+max(data_no_cof[,"formaldehyde"])
+max(data_no_cof[,"methanol"])
+max(data_no_cof[,"acetic"])
+max(data_no_cof[,"valine"])
+max(data_no_cof[,"acetolactic"])
+max(data_no_cof[,"dihydroxyisoval"])
+max(data_no_cof[,"methyl_oxobut"])
+
+#max(data_no_cof[,"NH3"])
+#max(data_no_cof[,"CO2"])
+#max(data_no_cof[,"H2"])
+
+
+```
+
+``` {r no cofactos 5 aa graphs, fig.height = 6, echo=FALSE}
+
+par(mfrow=c(2,4))
+plot(data_no_cof[,1], data_no_cof[,2], main ="CO2", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,3], main ="H2", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,4], main ="CO", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,5], main ="H2O", pch=20, cex=0.3, 
+     xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,6], main ="formic acid", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,7], main ="formaldehyde", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,8], main ="methanol", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,9], main ="acetic acid", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+
+par(mfrow=c(2,4))
+plot(data_no_cof[,1], data_no_cof[,10], main ="pyruvic acid", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+
+plot(data_no_cof[,1], data_no_cof[,11], main ="NH3", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,12], main ="alanine", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,13], main ="oxaloacetic acid", pch=20, cex=0.3, 
+     xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,14], main ="aspartic acid", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,15], main ="malic acid", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,16], main ="fumaric acid", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,17], main ="succinic acid", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+
+par(mfrow=c(2,4))
+plot(data_no_cof[,1], data_no_cof[,18], main ="oxoglutaric acid", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,19], main ="glutamic acid", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,20], main ="acetolactic acid", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,21], main ="dihydroxyisovaleric acid", pch=20, cex=0.3, 
+     xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,22], main ="3-methyl-2-oxobutanoate", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,23], main ="valine", pch=20, cex=0.3,
+      xlab ="Time", ylab="Concentration")
+plot(data_no_cof[,1], data_no_cof[,24], main ="glycine", pch=20, cex=0.3,
       xlab ="Time", ylab="Concentration")
 
 ```
